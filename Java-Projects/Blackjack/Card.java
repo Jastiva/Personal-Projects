@@ -49,7 +49,7 @@ public class Card {
 
 	public String generateFace(int faceInt) {
 
-		if (faceInt > 9 && faceInt < 13) {
+		if (faceInt > 10 && faceInt < 14) {
 			this.setValue(10);
 		} else if (faceInt == 1) {
 			this.setValue(11);
@@ -125,5 +125,4 @@ public class Card {
 			}
 		} return this.getSuit();
 	}
-
 }
