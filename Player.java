@@ -10,19 +10,16 @@ public class Player {
 	private String name;
 	private int hand;
 	private int bet;
-
-	public Player(int balance, String name) {
-		this.balance = balance;
-		this.name = name;
-		this.bet = 0;
-		this.hand = 0;
-	}
+	private Card[] playerHand;
+	private int handCount;
 
 	public Player() {
 		this.balance = 0;
 		this.name = "Dealer";
 		this.bet = 0;
 		this.hand = 0;
+		this.playerHand =  new Card [52];
+		this.handCount = 0;
 	}
 
 	public int getBalance() {
@@ -42,7 +39,12 @@ public class Player {
 	}
 
 	public int getHand() {
-		return hand;
+		int sum = 0;
+		for (int i = 0; i < this.handCount; i++) {
+			Card temp = this.playerHand[i];
+			sum += temp.getValue();
+		}
+		return sum;
 	}
 
 	public void setHand(int hand) {
@@ -57,6 +59,22 @@ public class Player {
 		this.bet = bet;
 	}
 
+	public Card[] getPlayerHand() {
+		return playerHand;
+	}
+
+	public void setPlayerHand(Card[] playerHand) {
+		this.playerHand = playerHand;
+	}
+
+	public int getHandCount() {
+		return handCount;
+	}
+
+	public void setHandCount(int handCount) {
+		this.handCount = handCount;
+	}
+
 	public int playBlackjack(Player player, Player dealer) {
 
 		//ask for bet
@@ -64,43 +82,72 @@ public class Player {
 		System.out.println("You have a remaining balance of " + player.getBalance() + ".\nPlease enter your bet: ");
 		player.setBet(scanner.nextInt());
 
-		while (player.getBet() > player.getBalance()) {
-			System.out.println("Incorrect bet! must be lesser than or equal to your balance of " + player.getBalance());
+		while (player.getBet() > player.getBalance() || player.getBet() < 1) {
+			System.out.println("Incorrect bet! must be a positive integer lesser than or equal to your balance of " + player.getBalance());
+			System.out.println("Please enter your bet: ");
 			player.setBet(scanner.nextInt());
 		}
 
 		System.out.println("Player " + player.getName() + " has wagered " + player.getBet());
 		player.setBalance(player.getBalance() - player.getBet());
 
-		//give out cards
+		//give out initial cards
 
-		Card player1 = new Card();
-		Card player2 = new Card();
-		Card dealer1 = new Card();
-		Card dealer2 = new Card();
-		player1.generateFace();
-		player2.generateFace();
-		dealer1.generateFace();
-		dealer2.generateFace();
-		player1.generateSuit();
-		player2.generateSuit();
-		dealer1.generateSuit();
-		dealer2.generateSuit();
-		System.out.println("Dealer has a " + dealer1.getFace() + " of " + dealer1.getSuit() + " and a " + dealer2.getFace() + " of " + dealer2.getSuit() + " for a total of " + (dealer1.getValue() + dealer2.getValue()));
-		System.out.println("Player has a " + player1.getFace() + " of " + player1.getSuit() + " and a " + player2.getFace() + " of " + player2.getSuit() + " for a total of " + (player1.getValue() + player2.getValue()));
+		Deck deck = new Deck();
+		deck.shuffle();
+		dealer.playerDraw(deck);
+		player.playerDraw(deck);
+		dealer.playerDraw(deck);
+		player.playerDraw(deck);
+		System.out.println(dealer.getHand());
+		System.out.println(player.getHand());
 
-		//calculate values for dealer & player
+		//check both players for blackjack
 
-		dealer.setHand(dealer1.getValue() + dealer2.getValue());
-		player.setHand(player1.getValue() + player2.getValue());
-
-		//give dealer cards till they hit 17
-
-
+		if (dealer.checkBlackjack()) {
+			System.out.println("Dealer has blackjack! You have lost");
+			player.setBet(player.getBet() * -1);
+			player.clearCards();
+			dealer.clearCards();
+			return player.getBet();
+		}
+		if (player.checkBlackjack()) {
+			System.out.println("You have blackjack! You have won!");
+			player.setBet(player.getBet() * 2);
+			player.clearCards();
+			dealer.clearCards();
+			return player.getBet();
+		}
 
 		//let player receive cards till they don't want any more
 
+		System.out.println("Do you want to hit? Press 1 to hit, press 0 to stay");
+		int scanInt = scanner.nextInt();
+		while (scanInt == 1) {
+			player.playerDraw(deck);
+			if (player.getHand() > 21) {
+				System.out.println("You've busted with a total of " + player.getHand() + "!");
+				player.setBet(player.getBet() * -1);
+				player.clearCards();
+				dealer.clearCards();
+				return player.getBet();
+			}
+			System.out.println("You now have " + player.getHand() + ", do you feel lucky? 1 to hit, 0 to stay");
+			scanInt = scanner.nextInt();
+		}
 
+		//give dealer cards till they hit 17
+
+		while (dealer.getHand() < 17) {
+			dealer.playerDraw(deck);
+			System.out.println("Dealer has drawn and now has " + dealer.getHand());
+			if (dealer.getHand() > 21) {
+				System.out.println("Dealer has busted with " + dealer.getHand() + ", you have won!");
+				player.clearCards();
+				dealer.clearCards();
+				return player.getBet();
+			}
+		}
 
 		//determine winner
 
@@ -116,7 +163,8 @@ public class Player {
 
 		//return result
 
-		System.out.println("Good game, shall we play another?");
+		player.clearCards();
+		dealer.clearCards();
 		return player.getBet();
 	}
 
@@ -130,7 +178,20 @@ public class Player {
 		Scanner scanner = new Scanner(System.in);
 		System.out.println("Please enter your name:\r");
 		return scanner.nextLine();
-
 	}
 
+	public void playerDraw(Deck deck) {
+		this.playerHand[this.handCount] = deck.drawCard();
+		this.handCount++;
+	}
+
+	public boolean checkBlackjack() {
+		return (this.getHand() == 21);
+	}
+
+	public void clearCards() {
+		this.hand = 0;
+		this.playerHand =  new Card [52];
+		this.handCount = 0;
+	}
 }

@@ -1,29 +1,26 @@
 package com.tedyates;
 
-import java.util.Random;
-
 public class Card {
-	Random rand = new Random();
 	private int value;
-	private String  face;
+	private int faceInt;
+	private int suitInt;
+	private String face;
 	private String suit;
 
-	public Card(String face, String suit) {
+	public Card(int faceInt, int suitInt) {
+		this.faceInt = faceInt;
+		this.suitInt = suitInt;
 		this.value = 0;
-		this.face = "Null";
-		this.suit = suit;
+		this.face = this.generateFace(this.faceInt);
+		this.suit = this.generateSuit(this.suitInt);
 	}
 
 	public Card() {
+		this.faceInt = 0;
+		this.suitInt = 0;
 		this.value = 0;
-		this.face = "Null";
-		this.suit = null;
-	}
-
-	public Card(String face) {
-		this.value = 0;
-		this.face = "Null";
-		this.suit = null;
+		this.face = "null";
+		this.suit = "null";
 	}
 
 	public int getValue() {
@@ -50,15 +47,16 @@ public class Card {
 		this.suit = suit;
 	}
 
-	public String generateFace() {
-		Random rand = new Random();
-		int face =  rand.nextInt(12) + 1;
-		if (face > 9 && face < 13) {
+	public String generateFace(int faceInt) {
+
+		if (faceInt > 9 && faceInt < 13) {
 			this.setValue(10);
+		} else if (faceInt == 1) {
+			this.setValue(11);
 		} else {
-			this.setValue(face);
+			this.setValue(faceInt);
 		}
-		switch (face) {
+		switch (faceInt) {
 			case 1:
 				this.face = "Ace";
 				break;
@@ -102,9 +100,9 @@ public class Card {
 		return this.face;
 	}
 
-	public String generateSuit() {
-		int temp = rand.nextInt(3) + 1;
-		switch (temp) {
+	public String generateSuit(int suitInt) {
+
+		switch (suitInt) {
 			case 1: {
 				this.setSuit("Spades");
 				break;

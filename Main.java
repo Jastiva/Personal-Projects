@@ -5,7 +5,6 @@ public class Main {
 	public static void main(String[] args) {
 
 		//initialize players
-
 		Player player = new Player();
 		player.setBalance(Player.scanBalance());
 		player.setName(Player.scanName());
