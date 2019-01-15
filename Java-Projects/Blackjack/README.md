@@ -1,4 +1,4 @@
-README - This is my first project that has nothing to do with any tutorial or Udemy class.
+This is my first project that has nothing to do with any tutorial or Udemy class.
 
 Currently a work in progress, I'm using it to teach myself the basics of Java and OOP in general.
 
