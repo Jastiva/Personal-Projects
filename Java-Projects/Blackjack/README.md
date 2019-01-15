@@ -1,6 +1,6 @@
 This is my first project that has nothing to do with any tutorial or Udemy class.
 
-TODO: Ace 1/11 mechanic, player.getHand > 21 bug, Tidying/organizing, QA
+TODO: Ace 1/11 mechanic, QA
 
 A command line program that plays blackjack (2:1) with you. 
 
