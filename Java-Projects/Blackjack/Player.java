@@ -6,6 +6,8 @@ public class Player {
 
 	public Scanner scanner = new Scanner(System.in);
 
+////////////////Constructors////////////////////////
+
 	private int balance;
 	private String name;
 	private int hand;
@@ -21,6 +23,7 @@ public class Player {
 		this.playerHand =  new Card [52];
 		this.handCount = 0;
 	}
+////////////////Getters and Setters//////////////////
 
 	public int getBalance() {
 		return balance;
@@ -75,6 +78,8 @@ public class Player {
 		this.handCount = handCount;
 	}
 
+	///////////////Big Blackjack Method//////////////
+
 	public int playBlackjack(Player player, Player dealer) {
 
 		//ask for bet
@@ -99,41 +104,34 @@ public class Player {
 		player.playerDraw(deck);
 		dealer.playerDraw(deck);
 		player.playerDraw(deck);
-		System.out.println(dealer.getHand());
-		System.out.println(player.getHand());
+		System.out.println("Dealer has drawn " + dealer.getHand());
+		System.out.println("Player has drawn " + player.getHand());
 
 		//check both players for blackjack
 
 		if (dealer.checkBlackjack()) {
-			System.out.println("Dealer has blackjack! You have lost");
-			player.setBet(player.getBet() * -1);
-			player.clearCards();
-			dealer.clearCards();
-			return player.getBet();
+			return dealer.endGame(1, player, dealer);
 		}
 		if (player.checkBlackjack()) {
-			System.out.println("You have blackjack! You have won!");
-			player.setBet(player.getBet() * 2);
-			player.clearCards();
-			dealer.clearCards();
-			return player.getBet();
+			return dealer.endGame(2, player, dealer);
 		}
 
-		//let player receive cards till they don't want any more
+		//let player receive cards till they choose to stand
 
 		System.out.println("Do you want to hit? Press 1 to hit, press 0 to stay");
 		int scanInt = scanner.nextInt();
 		while (scanInt == 1) {
 			player.playerDraw(deck);
 			if (player.getHand() > 21) {
-				System.out.println("You've busted with a total of " + player.getHand() + "!");
-				player.setBet(player.getBet() * -1);
-				player.clearCards();
-				dealer.clearCards();
-				return player.getBet();
+				return dealer.endGame(3, player, dealer);
 			}
-			System.out.println("You now have " + player.getHand() + ", do you feel lucky? 1 to hit, 0 to stay");
-			scanInt = scanner.nextInt();
+			if (player.getHand() == 21) {
+				System.out.println("You've drawn 21!");
+				scanInt = 0;
+			} else {
+				System.out.println("You now have " + player.getHand() + ", do you feel lucky? 1 to hit, 0 to stay");
+				scanInt = scanner.nextInt();
+			}
 		}
 
 		//give dealer cards till they hit 17
@@ -142,31 +140,22 @@ public class Player {
 			dealer.playerDraw(deck);
 			System.out.println("Dealer has drawn and now has " + dealer.getHand());
 			if (dealer.getHand() > 21) {
-				System.out.println("Dealer has busted with " + dealer.getHand() + ", you have won!");
-				player.clearCards();
-				dealer.clearCards();
-				return player.getBet();
+				return dealer.endGame(4, player, dealer);
 			}
 		}
 
 		//determine winner
 
 		if (dealer.getHand() > player.getHand()) {
-			player.setBet(player.getBet() * -1);
-			System.out.println("You've lost!");
+			return dealer.endGame(5, player, dealer);
 		}  else if (dealer.getHand() == player.getHand()) {
-			player.setBet(0);
-			System.out.println("You've tied!");
+			return dealer.endGame(6, player, dealer);
 		} else {
-			System.out.println("You've won!");
+			return dealer.endGame(7, player, dealer);
 		}
-
-		//return result
-
-		player.clearCards();
-		dealer.clearCards();
-		return player.getBet();
 	}
+
+	///////////Additional Methods////////////////////
 
 	public static int scanBalance() {
 		Scanner scanner = new Scanner(System.in);
@@ -190,8 +179,42 @@ public class Player {
 	}
 
 	public void clearCards() {
-		this.hand = 0;
 		this.playerHand =  new Card [52];
+		this.hand = 0;
 		this.handCount = 0;
+	}
+
+	public int endGame(int result, Player player, Player dealer) {
+		switch (result) {
+			case 1:
+				System.out.println("Dealer has blackjack! You have lost!");
+				player.setBet(player.getBet() * -1);
+				break;
+			case 2:
+				System.out.println("You have blackjack! You have won!");
+				player.setBet(player.getBet() * 2);
+				break;
+			case 3:
+				System.out.println("You've busted with a total of " + player.getHand() + "!");
+				player.setBet(player.getBet() * -1);
+				break;
+			case 4:
+				System.out.println("Dealer has busted with " + dealer.getHand() + ", you have won!");
+				break;
+			case 5:
+				System.out.println("You've lost!");
+				player.setBet(player.getBet() * -1);
+				break;
+			case 6:
+				System.out.println("You've tied!");
+				player.setBet(0);
+				break;
+			case 7:
+				System.out.println("You've won!");
+				break;
+		}
+		dealer.clearCards();
+		player.clearCards();
+		return player.getBet();
 	}
 }
