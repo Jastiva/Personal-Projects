@@ -1,10 +1,9 @@
 package com.tedyates;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Player {
-
-	public Scanner scanner = new Scanner(System.in);
 
 ////////////////Constructors////////////////////////
 
@@ -18,7 +17,7 @@ public class Player {
 		this.balance = 0;
 		this.name = "Dealer";
 		this.bet = 0;
-		this.playerHand =  new Card [52];
+		this.playerHand = new Card [52];
 		this.handCount = 0;
 	}
 ////////////////Getters and Setters//////////////////
@@ -65,102 +64,33 @@ public class Player {
 		this.bet = bet;
 	}
 
-	///////////////Big Blackjack Method//////////////
-
-	public int playBlackjack(Player player, Player dealer) {
-
-		//ask for bet
-
-		System.out.println("You have a remaining balance of " + player.getBalance() + ".\nPlease enter your bet: ");
-		player.setBet(scanner.nextInt());
-
-		while (player.getBet() > player.getBalance() || player.getBet() < 1) {
-			System.out.println("Incorrect bet! must be a positive integer lesser than or equal to your balance of " + player.getBalance());
-			System.out.println("Please enter your bet: ");
-			player.setBet(scanner.nextInt());
-		}
-
-		System.out.println("Player " + player.getName() + " has wagered " + player.getBet());
-		player.setBalance(player.getBalance() - player.getBet());
-
-		//give out initial cards
-
-		Deck deck = new Deck();
-		deck.shuffle();
-		player.playerDraw(deck);
-		dealer.playerDraw(deck);
-		player.playerDraw(deck);
-		dealer.playerDraw(deck);
-		System.out.println("Dealer has drawn " + dealer.getHand());
-		System.out.println("Player has drawn " + player.getHand());
-
-		//check both players for blackjack
-
-		if (dealer.checkBlackjack()) {
-			return dealer.endGame(1, player, dealer);
-		}
-		if (player.checkBlackjack()) {
-			return dealer.endGame(2, player, dealer);
-		}
-
-		//let player receive cards till they choose to stand
-
-		System.out.println("Do you want to hit? Press 1 to hit, press 0 to stay, or press 3 to double down");
-		int scanInt = scanner.nextInt();
-		while (scanInt == 1 || scanInt == 3) {
-
-			player.playerDraw(deck);
-
-			if (scanInt == 3) {
-				player.setBet(player.getBet() * 2);
-				scanInt = 0;
-			}
-			if (player.getHand() > 21) {
-				return dealer.endGame(3, player, dealer);
-			}
-			if (player.getHand() == 21) {
-				System.out.println("You've drawn 21!");
-				scanInt = 0;
-			}
-			if (scanInt != 0) {
-				System.out.println("You now have " + player.getHand() + ", do you feel lucky? 1 to hit, 0 to stay");
-				scanInt = scanner.nextInt();
-			}
-		}
-
-		//give dealer cards till they hit 17
-
-		while (dealer.getHand() < 17) {
-			dealer.playerDraw(deck);
-			System.out.println("Dealer has drawn and now has " + dealer.getHand());
-			if (dealer.getHand() > 21) {
-				return dealer.endGame(4, player, dealer);
-			}
-		}
-
-		//determine winner
-
-		if (dealer.getHand() > player.getHand()) {
-			return dealer.endGame(5, player, dealer);
-		}  else if (dealer.getHand() == player.getHand()) {
-			return dealer.endGame(6, player, dealer);
-		} else {
-			return dealer.endGame(7, player, dealer);
-		}
-	}
-
 	///////////Additional Methods////////////////////
 
-	public static int scanBalance() {
-		Scanner scanner = new Scanner(System.in);
+	public static int scanBalance(Player player) {
 		System.out.println("Welcome! Please input your desired starting balance:\r");
-		return scanner.nextInt();
+		return player.checkInt();
 	}
 
 	public static String scanName() {
 		Scanner scanner = new Scanner(System.in);
 		System.out.println("Please enter your name:\r");
 		return scanner.nextLine();
+	}
+
+	//credit to https://stackoverflow.com/questions/20693859/how-to-stop-exception-when-type-in-wrong-data-type-using-scanner
+	public int checkInt() {
+		Scanner scanner = new Scanner(System.in);
+		do {
+			try {
+				int guess = scanner.nextInt();
+				if (guess >= 0) {
+					return guess;
+				}
+			} catch (InputMismatchException e) {
+			}
+			System.out.println("Input must be an integer, no doubles, no floats, no strings");
+			scanner.nextLine();
+		} while (true);
 	}
 
 	public void playerDraw(Deck deck) {
@@ -178,37 +108,5 @@ public class Player {
 		this.handCount = 0;
 	}
 
-	public int endGame(int result, Player player, Player dealer) {
-		switch (result) {
-			case 1:
-				System.out.println("Dealer has blackjack! You have lost!");
-				player.setBet(player.getBet() * -1);
-				break;
-			case 2:
-				System.out.println("You have blackjack! You have won!");
-				player.setBet(player.getBet() * 2);
-				break;
-			case 3:
-				System.out.println("You've busted with a total of " + player.getHand() + "!");
-				player.setBet(player.getBet() * -1);
-				break;
-			case 4:
-				System.out.println("Dealer has busted with " + dealer.getHand() + ", you have won!");
-				break;
-			case 5:
-				System.out.println("You've lost!");
-				player.setBet(player.getBet() * -1);
-				break;
-			case 6:
-				System.out.println("You've tied!");
-				player.setBet(0);
-				break;
-			case 7:
-				System.out.println("You've won!");
-				break;
-		}
-		dealer.clearCards();
-		player.clearCards();
-		return player.getBet();
-	}
+
 }
