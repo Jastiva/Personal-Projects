@@ -2,7 +2,7 @@ This is my first programming project ever that has nothing to do with any tutori
 Building this game has been a huge help in learning the ins and outs of OOP and Java itself. 
 I highly recommend Tim Bulchalka's class, but once I got 1/3rd of the way through the class I needed to make something on my own.
 
-TODO: Ace 1/11 mechanic, double down mechanic, split mechanic
+TODO: split mechanic
 
 A command line program that plays blackjack (2:1) with you!
 
