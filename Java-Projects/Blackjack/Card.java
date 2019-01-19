@@ -2,25 +2,13 @@ package com.tedyates;
 
 public class Card {
 	private int value;
-	private int faceInt;
-	private int suitInt;
 	private String face;
 	private String suit;
 
 	public Card(int faceInt, int suitInt) {
-		this.faceInt = faceInt;
-		this.suitInt = suitInt;
 		this.value = 0;
-		this.face = this.generateFace(this.faceInt);
-		this.suit = this.generateSuit(this.suitInt);
-	}
-
-	public Card() {
-		this.faceInt = 0;
-		this.suitInt = 0;
-		this.value = 0;
-		this.face = "null";
-		this.suit = "null";
+		this.face = this.generateFace(faceInt);
+		this.suit = this.generateSuit(suitInt);
 	}
 
 	public int getValue() {
@@ -29,14 +17,6 @@ public class Card {
 
 	public void setValue(int value) {
 		this.value = value;
-	}
-
-	public String getFace() {
-		return face;
-	}
-
-	public void setFace(String face) {
-		this.face = "Null";
 	}
 
 	public String getSuit() {
