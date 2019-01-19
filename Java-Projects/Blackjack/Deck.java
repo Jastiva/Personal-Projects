@@ -5,11 +5,11 @@ import java.util.Random;
 public class Deck {
 
 	private Card[] arrayOfCards = new Card[52];
-	public int cardcount = 0;
+	public int cardCount;
 
 	public Deck() {
 		int count = 0;
-		this.cardcount = 0;
+		this.cardCount = 0;
 		for (int i = 1; i < 14; i++) {
 			for (int j = 1; j < 5; j++) {
 				arrayOfCards[count++] = new Card(i, j);
@@ -30,7 +30,7 @@ public class Deck {
 	}
 
 	public Card drawCard() {
-		this.cardcount++;
-		return arrayOfCards[cardcount-1];
+		this.cardCount++;
+		return arrayOfCards[cardCount-1];
 	}
 }
