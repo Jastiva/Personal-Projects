@@ -14,6 +14,7 @@ public class Player {
 	private int bet;
 	private Card[] playerHand;
 	private int handCount;
+	private int aceCount;
 
 	public Player() {
 		this.balance = 0;
@@ -22,6 +23,7 @@ public class Player {
 		this.hand = 0;
 		this.playerHand =  new Card [52];
 		this.handCount = 0;
+		this.aceCount = 0;
 	}
 ////////////////Getters and Setters//////////////////
 
@@ -43,9 +45,19 @@ public class Player {
 
 	public int getHand() {
 		int sum = 0;
+		int aceCount = 0;
 		for (int i = 0; i < this.handCount; i++) {
 			Card temp = this.playerHand[i];
+			if (temp.getValue() == 11) {
+				aceCount++;
+				System.out.println("Ace count has been increased to " + aceCount);
+			}
 			sum += temp.getValue();
+		}
+		for (int j = 0; j < aceCount; j++) {
+			if (sum > 21) {
+				sum -= 10;
+			}
 		}
 		return sum;
 	}
@@ -76,6 +88,14 @@ public class Player {
 
 	public void setHandCount(int handCount) {
 		this.handCount = handCount;
+	}
+
+	public int getAceCount() {
+		return aceCount;
+	}
+
+	public void setAceCount(int aceCount) {
+		this.aceCount = aceCount;
 	}
 
 	///////////////Big Blackjack Method//////////////
@@ -118,17 +138,24 @@ public class Player {
 
 		//let player receive cards till they choose to stand
 
-		System.out.println("Do you want to hit? Press 1 to hit, press 0 to stay");
+		System.out.println("Do you want to hit? Press 1 to hit, press 0 to stay, or press 3 to double down");
 		int scanInt = scanner.nextInt();
-		while (scanInt == 1) {
+		while (scanInt == 1 || scanInt == 3) {
+
 			player.playerDraw(deck);
+
+			if (scanInt == 3) {
+				player.setBet(player.getBet() * 2);
+				scanInt = 0;
+			}
 			if (player.getHand() > 21) {
 				return dealer.endGame(3, player, dealer);
 			}
 			if (player.getHand() == 21) {
 				System.out.println("You've drawn 21!");
 				scanInt = 0;
-			} else {
+			}
+			if (scanInt != 0) {
 				System.out.println("You now have " + player.getHand() + ", do you feel lucky? 1 to hit, 0 to stay");
 				scanInt = scanner.nextInt();
 			}
@@ -171,6 +198,7 @@ public class Player {
 
 	public void playerDraw(Deck deck) {
 		this.playerHand[this.handCount] = deck.drawCard();
+		System.out.println("A " + this.playerHand[this.handCount].getValue() + " has been drawn from the deck");
 		this.handCount++;
 	}
 
@@ -182,6 +210,17 @@ public class Player {
 		this.playerHand =  new Card [52];
 		this.hand = 0;
 		this.handCount = 0;
+	}
+
+	public int aceChecker(Player player) {
+		int aceCount = 0;
+		int handNum = this.getHandCount();
+		for (int i = 0; i < handNum; i++) {
+			if (this.playerHand[i].getValue() == 11) {
+				aceCount++;
+			}
+		}
+		return aceCount;
 	}
 
 	public int endGame(int result, Player player, Player dealer) {
