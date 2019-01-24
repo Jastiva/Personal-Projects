@@ -77,6 +77,15 @@ public class Player {
 		return scanner.nextLine();
 	}
 
+	/*
+	checkInt method was implemented from a solution I found on stackoverflow. The method creates a Scanner, and then
+	implements a do while loop. The do while loop creates the int "guess" at least once as the nextInt of the scanner.
+	The try/catch loop continues until InputMismatchException reads false (InputMismatchException is a special library
+	I imported for this purpose and reads true if the input != the desired input from Scanner). The loop continues to
+	prompt the user to enter an int. As soon as InputMismatchException reads false, the loop closes and the function
+	returns the value guess.
+	 */
+
 	//credit to https://stackoverflow.com/questions/20693859/how-to-stop-exception-when-type-in-wrong-data-type-using-scanner
 	public int checkInt() {
 		Scanner scanner = new Scanner(System.in);
