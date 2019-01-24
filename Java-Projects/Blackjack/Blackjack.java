@@ -6,6 +6,11 @@ public class Blackjack {
 
 		//ask for bet
 
+		/*
+		Use user input to set player bet. Remove bet from player balance before play begins to (1) prevent fraud in game
+		and (2) more easily apply the change in balance once the game is complete
+		 */
+
 		System.out.println("You have a remaining balance of " + player.getBalance() + ".\nPlease enter your bet: ");
 		player.setBet(player.checkInt());
 
@@ -19,6 +24,11 @@ public class Blackjack {
 		player.setBalance(player.getBalance() - player.getBet());
 
 		//give out initial cards
+
+		/*
+		Create a new deck each round to prevent memory problems and possible bugs with card repeats. Shuffle deck and
+		draw out 2 cards for each player.
+		 */
 
 		Deck deck = new Deck();
 		deck.shuffle();
@@ -39,6 +49,7 @@ public class Blackjack {
 		}
 
 		//let player receive cards till they choose to stand
+
 		System.out.println("Do you want to hit? Press 1 to hit, press 0 to stay, or press 2 to double down");
 		int scanInt = player.checkInt();
 		while (scanInt > 2){
@@ -85,6 +96,7 @@ public class Blackjack {
 			return this.endGame(7, player, dealer);
 		}
 	}
+	
 	public int endGame(int result, Player player, Player dealer) {
 		switch (result) {
 			case 1:
